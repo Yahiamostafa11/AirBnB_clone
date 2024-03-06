@@ -6,10 +6,10 @@ import json
 
 
 class BaseModel:
-    def __init__(self, name, my_number):
+    def __init__(self, name, usrnumber):
         self.id = str(uuid.uuid4())
         self.name = name
-        self.my_number = my_number
+        self.usrnumber = usrnumber
         self.created_at = self.updated_at = datetime.now()
 
     def __str__(self):
@@ -19,7 +19,7 @@ class BaseModel:
         return {
             'id': self.id,
             'name': self.name,
-            'my_number': self.my_number,
+            'usrnumber': self.usrnumber,
             '__class__': self.__class__.__name__,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()

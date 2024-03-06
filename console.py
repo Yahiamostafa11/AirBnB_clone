@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import cmd
-from console import HBNBCommand
+
 
 class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb)'
@@ -37,5 +37,9 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
         else:
             print(satamony)
-    if __name__ == '__main__':
-        HBNBCommand().cmdloop()
+    def default(self, satamony):
+        """Default command to handel unknown commands"""
+    print(f'{satamony}: command not found')
+ 
+if __name__ == '__main__':
+    HBNBCommand().cmdloop()
