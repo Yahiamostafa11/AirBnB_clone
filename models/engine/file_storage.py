@@ -1,37 +1,65 @@
+#!/usr/bin/python3
 import json
+from models.base_model import BaseModel
+from models.user import User
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.amenity import Amenity
+from models.state import State
+
 
 class FileStorage:
     __file_path = 'file.json'
     __objects = {}
-    def __init__(self):
-        self.__objects = {}
-        
+
+    classes = {
+        'Place': Place,
+        'State': State,
+        'City': City,
+        'Amenity': Amenity,
+        'Review': Review
+    }
+
     def all(self):
-        return self.__objects
-    
+        return FileStorage.__objects
+
     def new(self, obj):
-        self.__objects[obj.__class__.__name__ + '.' + obj.id] = obj
+        key = obj.__class__.__name__ + '.' + obj.id
+        FileStorage.__objects[key] = obj
 
     def save(self):
-        with open(self.__file_path, 'w') as f:
-            json.dump({k: v.to_dict() for k, v in self.__objects.items()}, f)
-    
+        with open(FileStorage.__file_path, "w") as f:
+            json.dump(
+                {k: v.to_dict() for k, v in FileStorage.__objects.items()},
+                f
+            )
+
     def reload(self):
         try:
-            with open(self.__file_path, 'r') as f:
-                self.__objects = {k: v(**v) for k, v in json.load(f).items()}
+            with open(FileStorage.__file_path) as f:
+                data = json.load(f)
+                for k, v in data.items():
+                    class_name = v.get("__class__")
+                    if class_name:
+                        del v["__class__"]
+                        self.new(globals()[class_name](**v))
         except FileNotFoundError:
-            pass 
-    
+            pass
+        except json.JSONDecodeError:
+            pass
+
     def destroy(self, obj=None):
         if obj:
-            del self.__objects[obj.__class__.__name__ + '.' + obj.id]
-            self.save()           
-   
+            key = obj.__class__.__name__ + '.' + obj.id
+            del FileStorage.__objects[key]
+            FileStorage.save()
+
     def delete(self, obj=None):
         if obj:
-            del self.__objects[obj.__class__.__name__ + '.' + obj.id]
-            self.save()
-    
+            key = obj.__class__.__name__ + '.' + obj.id
+            del FileStorage.__objects[key]
+            FileStorage.save()
+
     def close(self):
-        self.reload()
+        FileStorage.reload()

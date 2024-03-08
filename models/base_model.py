@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """Module for BaseModel class by satamony"""
-import uuid
 from datetime import datetime
-
+from uuid import uuid4
+import storage
 
 
 class BaseModel:
@@ -10,18 +10,7 @@ class BaseModel:
         self.id = str(uuid4())
         self.created_at = datetime.today()
         self.updated_at = datetime.today()
-        if args:
-            for i in range(len(args)):
-                if i == 0:
-                    self.id = args[i]
-                elif i == 1:
-                    self.created_at = datetime.strptime(args[i], '%Y-%m-%dT%H:%M:%S.%f')
-                elif i == 2:
-                    self.updated_at = datetime.strptime(args[i], '%Y-%m-%dT%H:%M:%S.%f')
-                elif i == 3:
-                    self.name = args[i]
-                elif i == 4:
-                    self.usrnumber = args[i]
+
         if kwargs:
             for key, value in kwargs.items():
                 if key == 'created_at' or key == 'updated_at':
@@ -29,11 +18,13 @@ class BaseModel:
                 if key != '__class__':
                     setattr(self, key, value)
         else:
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
+            self.id = str(uuid4())
+            self.created_at = self.updated_at = datetime.now()
+
+            storage.new(self)
 
     def __str__(self):
-        return '[BaseModel] ({}) {}'.format(self.id, self.to_dict())
+        return '[self.class.name] ({}) {}'.format(self.id, self.dict())
 
     def to_dict(self):
         return {
@@ -48,5 +39,4 @@ class BaseModel:
     def save(self):
         self.updated_at = datetime.now()
 
-    
-
+        storage.save()
