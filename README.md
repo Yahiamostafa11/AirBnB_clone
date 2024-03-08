@@ -44,7 +44,6 @@ $ python3 console.py
 (hbnb) all BaseModel
 []
 (hbnb) quit
-$
 
 ## License
 
