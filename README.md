@@ -6,11 +6,11 @@ This is a command interpreter to manage your application objects.
 
 This project was quite a challenge. Here's a fun representation of the journey:
 
-![Hard Working Programmer](https://images.app.goo.gl/BcQNTwiqoV9e1t6h7)
+![Hard Working Programmer](https://miro.medium.com/v2/resize:fit:1200/1*Z734b4vj4xRYgFLaPfWvvg.png)
 
 And the feeling when it finally worked:
 
-![Celebration GIF](https://images.app.goo.gl/R1jAkmrD8vRf46fW7)
+![Celebration GIF](https://media.tenor.com/EDcalEQLFJYAAAAd/gojo-gojo-satoru.gif)
 
 ## How to Use
 
