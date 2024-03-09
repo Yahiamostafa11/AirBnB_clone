@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import cmd
-import models
 from models.base_model import BaseModel
 from models.state import State
 from models.review import Review
@@ -8,11 +7,10 @@ from models.city import City
 from models.amenity import Amenity
 from models.place import Place
 from models.user import User
+from helper import parse_argument
+import models
 
-
-class HBNBCommand(cmd.Cmd):
-    prompt = '(hbnb)'
-    classes = {
+classes = {
         "BaseModel": BaseModel,
         "State": State,
         "Review": Review,
@@ -21,6 +19,8 @@ class HBNBCommand(cmd.Cmd):
         "Place": Place,
         "User": User
     }
+class HBNBCommand(cmd.Cmd):
+    prompt = '(hbnb)'
 
     def do_quit(self, satamony):
         """Quit command to exit the program"""
@@ -35,24 +35,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, satamony):
         """Create command to create a new instance"""
-        args = satamony.split()
-        args = [parse_argument(arg) for arg in args]
+        args = parse_argument(satamony)
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] not in models.classes:
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         else:
-            new_instance = models.classes[args[0]]()
+            new_instance = classes[args[0]]()
             new_instance.save()
             print(new_instance.id)
 
     def do_show(self, satamony):
         """Show command to show an instance"""
-        args = satamony.split()
-        args = [parse_argument(arg) for arg in args]
+        args = parse_argument(satamony)
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] not in models.classes:
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         elif len(args) == 1:
             print("** instance id missing **")
@@ -65,11 +63,10 @@ class HBNBCommand(cmd.Cmd):
 
     def do_destroy(self, satamony):
         """Destroy command to destroy an instance"""
-        args = satamony.split()
-        args = [parse_argument(arg) for arg in args]
+        args = parse_argument(satamony)
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] not in models.classes:
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         elif len(args) == 1:
             print("** instance id missing **")
@@ -83,28 +80,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, satamony):
         """All command to show all instances"""
-    args = satamony.split()
-    args = [parse_argument(arg) for arg in args]
-    if len(args) > 0 and args[0] not in models.classes:
-        print("** class doesn't exist **")
-    else:
-        instances = [
-            str(value) for key, value in models.storage.all().items()
-            if len(args) == 0 or key.split(".")[0] == args[0]
-        ]
-        print(instances)
-
-    def default(self, satamony):
-        """Default command to handle unknown commands"""
-        print(f'{satamony}: command not found')
+        args = parse_argument(satamony)
+        if len(args) > 0 and args[0] not in classes:
+            print("** class doesn't exist **")
+        else:
+            instances = [
+                str(value) for key, value in models.storage.all().items()
+                if len(args) == 0 or key.split(".")[0] == args[0]
+            ]
+            print(instances)
 
     def do_update(self, satamony):
         """Update command to update an instance"""
-        args = satamony.split()
-        args = [parse_argument(arg) for arg in args]
+        args = parse_argument(satamony)
         if len(args) == 0:
             print("** class name missing **")
-        elif args[0] not in models.classes:
+        elif args[0] not in classes:
             print("** class doesn't exist **")
         elif len(args) == 1:
             print("** instance id missing **")
@@ -120,7 +111,10 @@ class HBNBCommand(cmd.Cmd):
                 instance = models.storage.all()[key]
                 setattr(instance, args[2], args[3])
                 instance.save()
-
+            
+    
+    def default(self, satamony):
+        print(parse_argument(satamony))
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

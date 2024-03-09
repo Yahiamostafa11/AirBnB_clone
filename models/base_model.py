@@ -2,7 +2,7 @@
 """Module for BaseModel class by satamony"""
 from datetime import datetime
 from uuid import uuid4
-import storage
+import models
 
 
 class BaseModel:
@@ -21,7 +21,7 @@ class BaseModel:
             self.id = str(uuid4())
             self.created_at = self.updated_at = datetime.now()
 
-            storage.new(self)
+            models.storage.new(self)
 
     def __str__(self):
         return '[self.class.name] ({}) {}'.format(self.id, self.dict())
@@ -30,7 +30,6 @@ class BaseModel:
         return {
             'id': self.id,
             'name': self.name,
-            'usrnumber': self.usrnumber,
             '__class__': self.__class__.__name__,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
@@ -38,5 +37,4 @@ class BaseModel:
 
     def save(self):
         self.updated_at = datetime.now()
-
-        storage.save()
+        models.storage.save()

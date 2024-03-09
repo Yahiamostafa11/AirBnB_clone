@@ -29,11 +29,11 @@ class FileStorage:
         FileStorage.__objects[key] = obj
 
     def save(self):
+        seriralized = {
+            k: v.to_dict() for k, v in self.__objects.items()
+        }
         with open(FileStorage.__file_path, "w") as f:
-            json.dump(
-                {k: v.to_dict() for k, v in FileStorage.__objects.items()},
-                f
-            )
+            f.write(json.dumps(seriralized))
 
     def reload(self):
         try:
