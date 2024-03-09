@@ -13,7 +13,7 @@ And the feeling when it finally worked:
 ![Celebration GIF](https://media.tenor.com/EDcalEQLFJYAAAAd/gojo-gojo-satoru.gif)
 
 ## How to Use
-
+ 
 1. Run the console.py file in your terminal: `python3 console.py`
 2. You will be greeted with a prompt `(hbnb)`
 
