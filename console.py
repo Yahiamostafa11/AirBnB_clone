@@ -20,101 +20,126 @@ classes = {
         "User": User
     }
 class HBNBCommand(cmd.Cmd):
-    prompt = '(hbnb)'
+    prompt = "(hbnb) "
+    def do_create(self, arg):
+        """Creates a new instance of BaseModel, saves it (to the JSON file) and prints the id"""
+        if not arg:
+            print("** class name missing **")
+            return
+        args = arg.split()
+        if args[0] not in classes:
+            print("** class doesn't exist **")
+            return
+        new_instance = classes[args[0]]()
+        new_instance.save()
+        print(new_instance.id)
 
-    def do_quit(self, satamony):
+    def do_show(self, arg):
+        """Prints the string representation of an instance based on the class name and id"""
+        if not arg:
+            print("** class name missing **")
+            return
+        args = arg.split()
+        if args[0] not in classes:
+            print("** class doesn't exist **")
+            return
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        key = args[0] + "." + args[1]
+        if key not in models.storage.all():
+            print("** no instance found **")
+            return
+        print(models.storage.all()[key])
+
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class name and id
+        (save the change into the JSON file)"""
+        if not arg:
+            print("** class name missing **")
+            return
+        args = arg.split()
+        if args[0] not in classes:
+            print("** class doesn't exist **")
+            return
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        key = args[0] + "." + args[1]
+        if key not in models.storage.all():
+            print("** no instance found **")
+            return
+        del models.storage.all()[key]
+        models.storage.save()
+    
+    def do_all(self, arg):
+        """Prints all string representation of all instances based or not on the class name"""
+        args = arg.split()
+        if args and args[0] not in classes:
+            print("** class doesn't exist **")
+            return
+        print([str(v) for k, v in models.storage.all().items() if not args or v.__class__.__name__ == args[0]])
+
+    def do_update(self, arg):
+        """Updates an instance based on the class name and id by adding or updating attribute
+        (save the change into the JSON file)"""
+        if not arg:
+            print("** class name missing **")
+            return
+        args = parse_argument(arg)
+        if args[0] not in classes:
+            print("** class doesn't exist **")
+            return
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        key = args[0] + "." + args[1]
+        if key not in models.storage.all():
+            print("** no instance found **")
+            return
+        if len(args) < 3:
+            print("** attribute name missing **")
+            return
+        if len(args) < 4:
+            print("** value missing **")
+            return
+        setattr(models.storage.all()[key], args[2], args[3])
+        models.storage.save()
+
+    def do_quit(self, arg):
         """Quit command to exit the program"""
         return True
-
-    def do_EOF(self, satamony):
+    
+    def do_EOF(self, arg):
         """EOF command to exit the program"""
         return True
-
+    
     def emptyline(self):
+        """Called when an empty line is entered in response to the prompt"""
         pass
 
-    def do_create(self, satamony):
-        """Create command to create a new instance"""
-        args = parse_argument(satamony)
-        if len(args) == 0:
-            print("** class name missing **")
-        elif args[0] not in classes:
+    def default(self, arg):
+        """Called on an input line when the command prefix is not recognized"""
+        args = arg.split(".")
+        if len(args) < 2:
+            print("*** Unknown syntax:", arg)
+            return
+        if args[0] not in classes:
             print("** class doesn't exist **")
+            return
+        if args[1] == "all()":
+            self.do_all(args[0])
+        elif args[1] == "count()":
+            print(len([v for k, v in models.storage.all().items() if v.__class__.__name__ == args[0]]))
+        elif args[1].startswith("show("):
+            self.do_show(args[0] + " " + args[1][6:-2])
+        elif args[1].startswith("destroy("):
+            self.do_destroy(args[0] + " " + args[1][9:-2])
+        elif args[1].startswith("update("):
+            self.do_update(args[0] + " " + args[1][7:-1])
         else:
-            new_instance = classes[args[0]]()
-            new_instance.save()
-            print(new_instance.id)
+            print("*** Unknown syntax:", arg)
 
-    def do_show(self, satamony):
-        """Show command to show an instance"""
-        args = parse_argument(satamony)
-        if len(args) == 0:
-            print("** class name missing **")
-        elif args[0] not in classes:
-            print("** class doesn't exist **")
-        elif len(args) == 1:
-            print("** instance id missing **")
-        else:
-            key = args[0] + "." + args[1]
-            if key not in models.storage.all():
-                print("** no instance found **")
-            else:
-                print(models.storage.all()[key])
-
-    def do_destroy(self, satamony):
-        """Destroy command to destroy an instance"""
-        args = parse_argument(satamony)
-        if len(args) == 0:
-            print("** class name missing **")
-        elif args[0] not in classes:
-            print("** class doesn't exist **")
-        elif len(args) == 1:
-            print("** instance id missing **")
-        else:
-            key = args[0] + "." + args[1]
-            if key not in models.storage.all():
-                print("** no instance found **")
-            else:
-                del models.storage.all()[key]
-                models.storage.save()
-
-    def do_all(self, satamony):
-        """All command to show all instances"""
-        args = parse_argument(satamony)
-        if len(args) > 0 and args[0] not in classes:
-            print("** class doesn't exist **")
-        else:
-            instances = [
-                str(value) for key, value in models.storage.all().items()
-                if len(args) == 0 or key.split(".")[0] == args[0]
-            ]
-            print(instances)
-
-    def do_update(self, satamony):
-        """Update command to update an instance"""
-        args = parse_argument(satamony)
-        if len(args) == 0:
-            print("** class name missing **")
-        elif args[0] not in classes:
-            print("** class doesn't exist **")
-        elif len(args) == 1:
-            print("** instance id missing **")
-        elif len(args) == 2:
-            print("** attribute name missing **")
-        elif len(args) == 3:
-            print("** value missing **")
-        else:
-            key = args[0] + "." + args[1]
-            if key not in models.storage.all():
-                print("** no instance found **")
-            else:
-                instance = models.storage.all()[key]
-                setattr(instance, args[2], args[3])
-                instance.save()
-            
-    
-    def default(self, satamony):
-        print(parse_argument(satamony))
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

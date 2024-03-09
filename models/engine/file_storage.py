@@ -10,56 +10,36 @@ from models.state import State
 
 
 class FileStorage:
-    __file_path = 'file.json'
+    """FileStorage class that serial
+    izes instances to a JSON file and deserializes JSON file to instances"""
+
+    __file_path = "file.json"
     __objects = {}
 
-    classes = {
-        'Place': Place,
-        'State': State,
-        'City': City,
-        'Amenity': Amenity,
-        'Review': Review
-    }
-
     def all(self):
-        return FileStorage.__objects
+        """Method to return the dictionary __objects"""
+        return self.__objects
 
     def new(self, obj):
-        key = obj.__class__.__name__ + '.' + obj.id
-        FileStorage.__objects[key] = obj
+        """Method to set in __objects the obj with key <obj class name>.id"""
+        key = obj.__class__.__name__ + "." + obj.id
+        self.__objects[key] = obj
 
     def save(self):
-        seriralized = {
-            k: v.to_dict() for k, v in self.__objects.items()
-        }
-        with open(FileStorage.__file_path, "w") as f:
-            f.write(json.dumps(seriralized))
+        """Method to serialize __objects to the JSON file (path: __file_path)"""
+        new_dict = {}
+        for k, v in self.__objects.items():
+            new_dict[k] = v.to_dict()
+        with open(self.__file_path, "w", encoding="utf-8") as f:
+            json.dump(new_dict, f)
 
     def reload(self):
+        """Method to deserialize the JSON file to __objects"""
         try:
-            with open(FileStorage.__file_path) as f:
-                data = json.load(f)
-                for k, v in data.items():
-                    class_name = v.get("__class__")
-                    if class_name:
-                        del v["__class__"]
-                        self.new(globals()[class_name](**v))
+            with open(self.__file_path, "r", encoding="utf-8") as f:
+                new_dict = json.load(f)
+                for k, v in new_dict.items():
+                    cls_name = v["__class__"]
+                    self.__objects[k] = eval(cls_name)(**v)
         except FileNotFoundError:
             pass
-        except json.JSONDecodeError:
-            pass
-
-    def destroy(self, obj=None):
-        if obj:
-            key = obj.__class__.__name__ + '.' + obj.id
-            del FileStorage.__objects[key]
-            FileStorage.save()
-
-    def delete(self, obj=None):
-        if obj:
-            key = obj.__class__.__name__ + '.' + obj.id
-            del FileStorage.__objects[key]
-            FileStorage.save()
-
-    def close(self):
-        FileStorage.reload()
