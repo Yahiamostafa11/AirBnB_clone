@@ -2,6 +2,7 @@ import shlex
 import re
 import json
 
+
 def parse_argument(args):
     """Parse an argument"""
     # search for {}
@@ -17,16 +18,18 @@ def parse_argument(args):
     if data:
         args.append(data)
     else:
-        args = [int(arg) if arg.isdigit() else arg for arg in args]  # Convert numbers to integers if possible
+        args = [int(arg) if arg.isdigit()
+                else arg
+                for arg in args]  # Convert numbers to integers if possible
     return args
+
 
 if __name__ == "__main__":
     # test strings
-    print(parse_argument('{ "name" : "hasan" } hello world'))
-    print(parse_argument('hello world { "name" : "hasan" }'))
-    print(parse_argument('hasan'))
+    print(parse_argument('{ "name" : "satamony" } hello world'))
+    print(parse_argument('hello world { "name" : "satamony" }'))
+    print(parse_argument('satamony'))
     print(parse_argument(''))
-
 
     # test numbers
     print(parse_argument('1 2 "3" 4'))

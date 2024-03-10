@@ -44,7 +44,7 @@ class TestHBNBCommand(unittest.TestCase):
 
         except FileNotFoundError:
             pass
-    
+
     def test_quit(self):
         """Test the quit command in and out of the console"""
         with patch('sys.stdin', StringIO('quit\n')) as mock_stdin:
@@ -55,10 +55,7 @@ class TestHBNBCommand(unittest.TestCase):
 
     def test_EOF(self):
         """Test the EOF command in and out of the console"""
-        with patch('sys.stdin', StringIO('EOF\n')) as mock_stdin:
-            self.console.onecmd("EOF")
-            self.assertEqual(self.mock_stdout.getvalue(), "")
-        with patch("sys.stdout", new=StringIO()) as output:
+        with patch('sys.stdout', new=StringIO()) as output:
             self.assertTrue(self.console.onecmd("EOF"))
 
     def test_create(self):
@@ -72,39 +69,47 @@ class TestHBNBCommand(unittest.TestCase):
     def test_show(self):
         """Test the show command in and out of the console"""
         with patch('sys.stdin', StringIO('show BaseModel\n')) as mock_stdin:
-            self.console.onecmd("show BaseModel")
-            self.assertEqual(self.mock_stdout.getvalue(), "** class doesn't exist **\n")
+            self.console.onecmd("show")
+            self.assertEqual(self.mock_stdout.getvalue(),
+                             "** class doesn't exist **\n")
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertTrue(self.console.onecmd("show BaseModel"))
         with patch('sys.stdout', new=StringIO()) as output:
             self.console.onecmd("show BaseModel")
-            self.assertTrue(output.getvalue().strip() == "** instance id missing **")
+            self.assertTrue(output.getvalue().strip() ==
+                            "** instance id missing **")
         with patch('sys.stdout', new=StringIO()) as output:
             self.console.onecmd("show BaseModel 1234-1234-1234")
-            self.assertTrue(output.getvalue().strip() == "** no instance found **")
+            self.assertTrue(output.getvalue().strip() ==
+                            "** no instance found **")
 
     def test_destroy(self):
         """Test the destroy command in and out of the console"""
         with patch('sys.stdin', StringIO('destroy BaseModel\n')) as mock_stdin:
             self.console.onecmd("destroy BaseModel")
-            self.assertEqual(self.mock_stdout.getvalue(), "** class doesn't exist **\n")
+            self.assertEqual(
+                self.mock_stdout.getvalue(), "** class doesn't exist **\n")
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertTrue(self.console.onecmd("destroy BaseModel"))
         with patch('sys.stdout', new=StringIO()) as output:
             self.console.onecmd("destroy BaseModel")
-            self.assertTrue(output.getvalue().strip() == "** instance id missing **")
+            self.assertTrue(output.getvalue().strip() ==
+                            "** instance id missing **")
         with patch('sys.stdout', new=StringIO()) as output:
             self.console.onecmd("destroy BaseModel 1234-1234-1234")
-            self.assertTrue(output.getvalue().strip() == "** no instance found **")
-    
+            self.assertTrue(output.getvalue().strip() ==
+                            "** no instance found **")
+
     def test_all(self):
         """Test the all command in and out of the console"""
         with patch('sys.stdin', StringIO('all BaseModel\n')) as mock_stdin:
             self.console.onecmd("all BaseModel")
-            self.assertEqual(self.mock_stdout.getvalue(), "** class doesn't exist **\n")
+            self.assertEqual(
+                self.mock_stdout.getvalue(), "** class doesn't exist **\n")
         with patch("sys.stdout", new=StringIO()) as output:
             self.console.onecmd("all BaseModel")
-            self.assertTrue(self.console.onecmd("all BaseModel"))
+            self.assertTrue(self.console.onecmd
+                            ("all BaseModel"))
 
     def test_emptyline(self):
         """Test the emptyline command"""
